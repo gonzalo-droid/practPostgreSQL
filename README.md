@@ -1,0 +1,2 @@
+# practPostgreSQL
+comandos, querys , descrip,
