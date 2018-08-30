@@ -4,6 +4,23 @@ Comandos para consola:
 
 >sudo -i -u postgres
 >psql
+
+Leer comandos desde un archivo:
+>\i input.sql
+
+Listar DB
+>\l
+
+Listar tablas
+>\d
+
+Describe tablas
+\d table_name
+
+Usar DB
+>\c name_db
+
+//////////////////     R O L E S           ////////////////////////////////
 crear un rol
 >CREATE ROLE video LOGIN PASSWORD '123321';
 
@@ -46,11 +63,10 @@ _crear base datos con plantilla
 
 -Cambiar rol
 >SET ROLE rol_grupo;
-____
+////////////////////////////////////////////////////////////////////
 
 
-
-**Para hacer una base de datos una plantilla
+/////////Para hacer una base de datos una plantilla//////////////////
 ejecutamos lo siguiente:
 
 >UPDATE pg_database SET datistemplate = true
@@ -60,7 +76,15 @@ ejecutamos lo siguiente:
 SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='library'
 AND procpid<>pg_backend_pid();
 
-______------SCHEMAS-------______
+					or
+
+El query SELECT * FROM pg_stat_activity WHERE datname = 'curso_pg'; te permite visualizar que usuarios se encuentran actualmente conectados.
+Conociendo el pid (process id) puedes matar ese proceso para que el usuario termine esa conexión y ahí sí eliminar la base de datos. SELECT pg_terminate_backend(8449);
+////////////////////////////////////////////////////////////////////
+
+
+////////////////////// S C H E M A S//////////////////////////
+
 
 para sistemas muy grandes.
 agrupar por funcionalidad
@@ -77,11 +101,15 @@ nombre
 >GRANT privilege TO role WITH GRANT OPCTION
 *asiganar privilegios sobre todas las tablas
 en el schema video en el rol platzi
+
 >GRANT ALL ON ALL TABLES IN SCHEMA video TO platzi;
 *solo privilegios de SELECT
 >GRANT SELECT ON ALL TABLES IN SCHEMA video TO platzi;
 
---------DATOS SERIALES------------
+////////////////////////////////////////////////////////////////////
+
+////////////////D A T O S   S E R I A L////////////////////////////
+
 *uso primary key ID
 *limite de valor entero
 
@@ -96,8 +124,9 @@ en el schema video en el rol platzi
 sequence
 >SELECT currval('ejemplo')
 
------Cadenas de texto----
+////////////////////////////////////////////////////////////////////
 
+////////////////C A D E N A   de  TXT ////////////////////////////
 
 char => longitud fija, DNI
 varchar => variable, toma unicamente
@@ -112,17 +141,19 @@ text=> no se especifica longitud
 posicion2
 --------
  22
-
+**el sd complete the 10
 >select lpad('sd',10,'?')
 "????????sd"
+
 >select repeat('-',4) || 'zy' as dash;
 "----zy"
 >select trim(' r  ') as TRIM;
 "r"
 
+////////////////////////////////////////////////////////////////////
 
+////////////////A R R A Y////////////////////////////
 
---------A-R-R-A-Y-----
 
 >SELECT string_to_array('aa.bb.bb','.') AS d ;
 
@@ -130,23 +161,25 @@ posicion2
 
 >SELECT ARRAY[2013,2014,2015,2016] as array
 >SELECT ARRAY(SELECT DISTINCT tb_producto_nom from sh_taller.tb_producto)
->SELECT '{mysql,postgres}'::text[] AS x;
+>SELECT '{mysql,postgresQL}'::text[] AS x;
 **::=> cast de string => text
 
 >SELECT x[1] FROM(
-	SELECT '{mysql,postgres,a,b,c,d,e}'::text[] AS x
+	SELECT '{mysql,postgresQL,a,b,c,d,e}'::text[] AS x
 		) AS y;
 >SELECT UNNEST x[1:3] FROM(
-	SELECT '{mysql,postgres,a,b,c,d,e}'::text[] AS x
+	SELECT '{mysql,postgresQL,a,b,c,d,e}'::text[] AS x
 		) AS y;
 *Rango de 1 al 3
 >SELECT DISTINCT tb_producto_nom from sh_taller.tb_producto
 **Muestro los datos distintos de una columna
 
 
-_______RANGOS
+////////////////////////////////////////////////////////////////////
 
-SELECT '[1,6)'::int&range;
+//////////////// R A N G O S ////////////////////////////
+
+SELECT '[1,6)'::int8range;
 
 <code> en función int8range el
 [ significa que incluye desde el primer valor
@@ -183,6 +216,25 @@ END$$
 
 
 SELECT * FROM public.data WHERE '[70.0,71.0)'::numrange @> data.height;
+
+
+
+
+
+////////////////////////////////////////////////////////////////////
+
+//////////////// JJ SS OO NN ////////////////////////////
+
+CREATE TABLE json.profiles(id serial PRIMARY KEY, profile JSON);
+INSERT INTO json.profiles(profile) VALUES ('{"name":"Mario","tech":["postgres","pyhton","mysql"]}')
+INSERT INTO json.profiles(profile) VALUES ('{"name":"Luis","tech":["Rstudio","Fortnite","Web"]}')
+INSERT INTO json.profiles(profile) VALUES ('{"name":"Carlos","tech":["Power","Java","Server"]}')
+INSERT INTO profiles(profile) VALUES ( '{"name": "Jeduan", "tech": ["javascript", "nodejs"] }');
+ select json_extract_path_text(profile,'name') from json.profiles;
+SELECT json_extract_path_text(profile, 'tech') FROM profiles;
+SELECT json_extract_path_text(json_array_elements(profile, 'tech')) FROM profiles;
+b
+
 
 
 
